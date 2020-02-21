@@ -7,4 +7,4 @@ from .models import TestModel
 class TestSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TestModel
-        fields = ['name']
+        fields = ['name', 'image']
