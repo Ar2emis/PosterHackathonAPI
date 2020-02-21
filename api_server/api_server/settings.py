@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_cleanup.apps.CleanupConfig',
+    'admin_reorder',
 
     'user'
 ]
@@ -50,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'admin_reorder.middleware.ModelAdminReorder'
 ]
 
 ROOT_URLCONF = 'api_server.urls'
@@ -71,6 +74,18 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'api_server.wsgi.application'
+
+ADMIN_REORDER = [
+    {'app': 'user',
+     'label': 'Users',
+     'models': ['user.User', 'user.Role']
+    },
+    {'app': 'user',
+     'label': 'watch',
+     'models': ['user.Progress', 'user.WatchType',
+                'user.Watch']
+    }
+]
 
 
 # Database
@@ -108,7 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Kiev'
 
 USE_I18N = True
 
