@@ -64,7 +64,7 @@ class TaskViewSet(viewsets.ModelViewSet):
             if hasattr(self, 'detail_serializer_class'):
                 return self.detail_serializer_class
 
-        return super(UserViewSet, self).get_serializer_class()
+        return super(TaskViewSet, self).get_serializer_class()
 
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
