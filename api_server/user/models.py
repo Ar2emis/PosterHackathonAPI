@@ -13,6 +13,7 @@ class User(models.Model):
     uid = models.CharField(primary_key=True, max_length=10)
     name = models.CharField(max_length=40)
     role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True)
+    active = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.role} {self.name}'

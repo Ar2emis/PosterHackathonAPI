@@ -6,6 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 import base64
+from rest_framework.decorators import action
 
 
 class RoleViewSet(viewsets.ModelViewSet):
@@ -32,6 +33,28 @@ class UserViewSet(viewsets.ModelViewSet):
                 return self.detail_serializer_class
 
         return super(UserViewSet, self).get_serializer_class()
+
+    @action(detail=True, methods=['get'])
+    def set_active(self, request, pk=None):
+        user = self.get_object()
+
+        is_active = None
+        
+        parameter = request.query_params.get('active', None)
+        
+        if parameter == 'true':
+            is_active = True
+        elif parameter == 'false':
+            is_active = False
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        user.active = is_active
+        user.save()
+
+        data = self.get_serializer_class()(user, context={'request': request}).data
+
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
 class ProgressViewSet(viewsets.ModelViewSet):
@@ -133,4 +156,4 @@ class WatchViewSet(viewsets.ModelViewSet):
             if hasattr(self, 'detail_serializer_class'):
                 return self.detail_serializer_class
 
-        return super(UserViewSet, self).get_serializer_class()
+        return super(WatchViewSet, self).get_serializer_class()

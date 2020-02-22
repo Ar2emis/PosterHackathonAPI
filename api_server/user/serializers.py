@@ -16,7 +16,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = User
-        fields = ['url', 'name', 'role']
+        fields = ['url', 'name', 'role', 'active']
 
 
 class UserDetailSerializer(serializers.HyperlinkedModelSerializer):
@@ -24,7 +24,7 @@ class UserDetailSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = User
-        fields = ['url', 'name', 'role']
+        fields = ['url', 'name', 'role', 'active']
 
 
 class ProgressSerializer(serializers.HyperlinkedModelSerializer):
