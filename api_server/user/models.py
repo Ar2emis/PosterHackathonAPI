@@ -39,7 +39,7 @@ class Task(models.Model):
     text = models.TextField()
     worker = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     image = models.ImageField(null=True, blank=True)
-    progress = models.ForeignKey(Progress, on_delete=models.SET_DEFAULT, default=Progress.objects.filter(uid='todo').first().pk, blank=True)
+    progress = models.ForeignKey(Progress, on_delete=models.SET_NULL, null=True, blank=True)
     work_type = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
