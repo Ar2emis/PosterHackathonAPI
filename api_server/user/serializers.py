@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from drf_extra_fields.fields import HybridImageField
 
 
 
@@ -56,6 +57,14 @@ class TaskDetailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Task
         fields = ['url', 'name', 'text', 'worker', 'image', 'progress', 'work_type']
+
+    @property
+    def data(self):
+        data = super(TaskDetailSerializer, self).data
+
+        print(data)
+
+        return data
 
 
 class WatchSerializer(serializers.HyperlinkedModelSerializer):

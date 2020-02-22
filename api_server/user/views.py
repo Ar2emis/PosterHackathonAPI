@@ -5,7 +5,7 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
-
+import base64
 
 
 class RoleViewSet(viewsets.ModelViewSet):
@@ -66,12 +66,50 @@ class TaskViewSet(viewsets.ModelViewSet):
 
         return super(UserViewSet, self).get_serializer_class()
 
+    def list(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        images = [task.image.path for task in queryset]
+
+        images_data = []
+        for index in range(len(images)):
+            with open(images[index], "rb") as img_file:
+                image_data = base64.b64encode(img_file.read())
+                images_data.append(image_data)
+                
+        serializer = self.get_serializer_class()
+
+        data = serializer(queryset, many=True, context={'request': request}).data
+
+        for index in range(len(data)):
+            data[index]['image'] = images_data[index]
+           
+        return Response(data=data, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, pk=None):
+        queryset = self.filter_queryset(self.get_queryset())
+        task = queryset.filter(pk=pk).first()
+
+        if task == None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        image_data = None
+
+        with open(task.image.path, "rb") as img_file:
+                image_data = base64.b64encode(img_file.read())
+
+        data = self.get_serializer().to_representation(task)
+
+        data['image'] = image_data
+
+        return Response(data=data, status=status.HTTP_200_OK)
+
 
 class WatchViewSet(viewsets.ModelViewSet):
     queryset = Watch.objects.all()
     serializer_class = WatchSerializer
     detail_serializer_class = WatchDetailSerializer
-    filterset_fields = ['date', 'watch_type']
+    filterset_fields = ['date', 'watch_type__name']
 
     def filter_queryset(self, queryset):
         filter_backends = (DjangoFilterBackend, )

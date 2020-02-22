@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_cleanup.apps.CleanupConfig',
     'admin_reorder',
+    'corsheaders',
 
     'user'
 ]
@@ -52,8 +53,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'admin_reorder.middleware.ModelAdminReorder'
+    'admin_reorder.middleware.ModelAdminReorder',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'api_server.urls'
 
