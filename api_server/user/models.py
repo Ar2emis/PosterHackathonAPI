@@ -40,6 +40,7 @@ class Task(models.Model):
     worker = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     image = models.ImageField(null=True, blank=True)
     progress = models.ForeignKey(Progress, on_delete=models.SET_DEFAULT, default=Progress.objects.filter(uid='todo').first().pk, blank=True)
+    work_type = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.name
@@ -47,8 +48,7 @@ class Task(models.Model):
 class Watch(models.Model):
     date = models.DateField(primary_key=True)
     watch_type = models.ForeignKey(WatchType, on_delete=models.SET_NULL, null=True)
-    tasks = models.ManyToManyField(Task)
+    tasks = models.ManyToManyField(Task, related_name='watch_tasks')
 
     def __str__(self):
         return f'{self.date} {self.watch_type.name}'
-
