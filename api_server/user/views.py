@@ -69,13 +69,22 @@ class TaskViewSet(viewsets.ModelViewSet):
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
 
-        images = [task.image.path for task in queryset]
+        images = []
+        for index in range(len(queryset)):
+            print(queryset[index])
+            if not queryset[index].image:
+                images.append(None)
+            else:
+                images.append(queryset[index].image.path)
 
         images_data = []
         for index in range(len(images)):
-            with open(images[index], "rb") as img_file:
-                image_data = base64.b64encode(img_file.read())
-                images_data.append(image_data)
+            if images[index] == None:
+                images_data.append(None)
+            else:
+                with open(images[index], "rb") as img_file:
+                    image_data = base64.b64encode(img_file.read())
+                    images_data.append(image_data)
                 
         serializer = self.get_serializer_class()
 
@@ -95,8 +104,9 @@ class TaskViewSet(viewsets.ModelViewSet):
 
         image_data = None
 
-        with open(task.image.path, "rb") as img_file:
-                image_data = base64.b64encode(img_file.read())
+        if task.image:
+            with open(task.image.path, "rb") as img_file:
+                    image_data = base64.b64encode(img_file.read())
 
         data = self.get_serializer().to_representation(task)
 
