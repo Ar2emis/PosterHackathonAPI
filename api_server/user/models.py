@@ -47,7 +47,7 @@ class Task(models.Model):
         return self.name
 
 class Watch(models.Model):
-    date = models.DateField(primary_key=True)
+    date = models.DateField()
     watch_type = models.ForeignKey(WatchType, on_delete=models.SET_NULL, null=True)
     tasks = models.ManyToManyField(Task, related_name='watch_tasks')
 

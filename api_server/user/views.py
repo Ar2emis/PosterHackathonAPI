@@ -142,6 +142,7 @@ class WatchViewSet(viewsets.ModelViewSet):
     queryset = Watch.objects.all()
     serializer_class = WatchSerializer
     detail_serializer_class = WatchDetailSerializer
+    add_task_serializer_class = TaskSerializer
     filterset_fields = ['date', 'watch_type__name']
 
     def filter_queryset(self, queryset):
@@ -156,4 +157,33 @@ class WatchViewSet(viewsets.ModelViewSet):
             if hasattr(self, 'detail_serializer_class'):
                 return self.detail_serializer_class
 
+        if self.action == 'add_task':
+            if hasattr(self, 'add_task_serializer_class'):
+                return self.add_task_serializer_class
+
         return super(WatchViewSet, self).get_serializer_class()
+
+    @action(detail=True, methods=['post'])
+    def add_task(self, request, pk=None):
+        watch = self.get_object()
+
+        serializer = self.get_serializer(data=request.data, context={'request': request})
+
+        if not serializer.is_valid():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        serializer.save()
+
+        print(serializer.instance)
+
+        task = serializer.instance
+
+        task.save()
+
+        watch.tasks.add(task)
+
+        watch.save()
+
+        data = WatchDetailSerializer(watch, context={'request': request}).data
+
+        return Response(data=data, status=status.HTTP_200_OK)

@@ -40,9 +40,9 @@ class WatchTypeSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class TaskSerializer(serializers.HyperlinkedModelSerializer):
-    worker = serializers.HyperlinkedRelatedField(view_name='user-detail', queryset=User.objects.all())
-    progress = serializers.HyperlinkedRelatedField(view_name='progress-detail', queryset=Progress.objects.all())
-    work_type = serializers.HyperlinkedRelatedField(view_name='role-detail', queryset=Role.objects.all())
+    worker = serializers.HyperlinkedRelatedField(view_name='user-detail', queryset=User.objects.all(), required=False)
+    progress = serializers.HyperlinkedRelatedField(view_name='progress-detail', queryset=Progress.objects.all(), required=False)
+    work_type = serializers.HyperlinkedRelatedField(view_name='role-detail', queryset=Role.objects.all(), required=False)
 
     class Meta:
         model = Task
@@ -69,7 +69,7 @@ class TaskDetailSerializer(serializers.HyperlinkedModelSerializer):
 
 class WatchSerializer(serializers.HyperlinkedModelSerializer):
     watch_type = serializers.HyperlinkedRelatedField(view_name='watchtype-detail', queryset=WatchType.objects.all())
-    tasks = serializers.HyperlinkedRelatedField(view_name='task-detail', many=True, queryset=Task.objects.all())
+    tasks = serializers.HyperlinkedRelatedField(view_name='task-detail', many=True, queryset=Task.objects.all(), required=False)
 
     class Meta:
         model = Watch
