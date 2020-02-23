@@ -58,14 +58,12 @@ class TaskDetailSerializer(serializers.HyperlinkedModelSerializer):
         model = Task
         fields = ['url', 'name', 'text', 'worker', 'image', 'progress', 'work_type']
 
-    @property
-    def data(self):
-        data = super(TaskDetailSerializer, self).data
 
-        print(data)
+class ImageSerializer(serializers.Serializer):
+    image = serializers.CharField()
 
-        return data
-
+    class Meta:
+        fields = ['image']
 
 class WatchSerializer(serializers.HyperlinkedModelSerializer):
     watch_type = serializers.HyperlinkedRelatedField(view_name='watchtype-detail', queryset=WatchType.objects.all())

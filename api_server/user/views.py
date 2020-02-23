@@ -7,6 +7,9 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 import base64
 from rest_framework.decorators import action
+from django.core.files.base import ContentFile
+import random
+import string
 
 
 class RoleViewSet(viewsets.ModelViewSet):
@@ -71,6 +74,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     detail_serializer_class = TaskDetailSerializer
+    image_serializer_class = ImageSerializer
     filterset_fields = ['name', 'work_type__uid', 'work_type__name',
                         'worker__name', 'worker__role', 'worker__uid',
                         'progress__uid', 'progress__name']
@@ -86,6 +90,9 @@ class TaskViewSet(viewsets.ModelViewSet):
         if self.action == 'retrieve' or self.action == 'list':
             if hasattr(self, 'detail_serializer_class'):
                 return self.detail_serializer_class
+        elif self.action == 'upload_image':
+            if hasattr(self, 'detail_serializer_class'):
+                return self.image_serializer_class
 
         return super(TaskViewSet, self).get_serializer_class()
 
@@ -137,6 +144,32 @@ class TaskViewSet(viewsets.ModelViewSet):
 
         return Response(data=data, status=status.HTTP_200_OK)
 
+    @action(detail=True, methods=['patch'])
+    def upload_image(self, request, pk=None):
+        task = self.get_object()
+
+        serializer = self.get_serializer(data=request.data, context={'request': request})
+
+        if not serializer.is_valid():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        image_data = serializer.data['image']
+
+        image = ContentFile(base64.b64decode(image_data))
+
+        filename = ''.join(random.choices(string.ascii_letters +
+                             string.digits, k = 10)) + '.jpg'
+
+        task.image.save(filename, image, save=True)
+
+        task.save()
+
+        data = TaskDetailSerializer(task, context={'request': request}).data
+
+        data['image'] = image_data
+
+        return Response(data=data, status=status.HTTP_200_OK)
+
 
 class WatchViewSet(viewsets.ModelViewSet):
     queryset = Watch.objects.all()
@@ -173,8 +206,6 @@ class WatchViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         serializer.save()
-
-        print(serializer.instance)
 
         task = serializer.instance
 
